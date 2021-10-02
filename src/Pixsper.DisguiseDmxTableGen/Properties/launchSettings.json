@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Pixsper.DisguiseDmxTableGen": {
+      "commandName": "Project",
+      "commandLineArgs": "resolume"
+    }
+  }
+}
