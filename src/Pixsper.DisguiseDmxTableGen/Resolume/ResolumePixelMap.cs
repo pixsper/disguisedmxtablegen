@@ -58,11 +58,20 @@ namespace Pixsper.DisguiseDmxTableGen.Resolume
     {
         public static IEnumerable<ResolumeFixture> FromScreenXml(XElement el)
         {
-            var lumiverseId = el.AttributeAsInt("LumiverseId");
+            var elsParamRange = el.RequiredElement("OutputDevice")
+                .RequiredElement("OutputDeviceDmx")
+                .RequiredElement("DmxOutputParams")
+                .RequiredElements("ParamRange")
+                .ToImmutableList();
+
+            var subnet = elsParamRange.FirstElementWithAttributeValue("name", "Subnet").AttributeAsDouble("value");
+            var universe = elsParamRange.FirstElementWithAttributeValue("name", "Universe").AttributeAsDouble("value");
+
+            var combinedUniverse = (int)Math.Floor(universe) + ((int)Math.Floor(subnet) << 4);
 
             var elsDmxSlices = el.RequiredElement("layers").Elements("DmxSlice");
 
-            return elsDmxSlices.Select(elDmxSlice => FromXml(elDmxSlice, lumiverseId));
+            return elsDmxSlices.Select(elDmxSlice => FromXml(elDmxSlice, combinedUniverse));
         }
 
         public static ResolumeFixture FromXml(XElement el, int lumiverseId)
