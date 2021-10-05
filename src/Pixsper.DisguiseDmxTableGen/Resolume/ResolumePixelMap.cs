@@ -188,4 +188,65 @@ namespace Pixsper.DisguiseDmxTableGen.Resolume
             }
         }
     }
+
+    enum ColorFormat : int
+    {
+        Rgb,
+        Rbg,
+        Grb,
+        Gbr,
+        Brg,
+        Bgr,
+        L,
+        Rgba,
+        Rgbw,
+        Rgbwa,
+        Rgbaw,
+        Grbw,
+        Wrgb,
+        Wargb,
+        Cmy
+    }
+
+    static class ColorFormatExtensions
+    {
+        public static int GetChannelWidth(this ColorFormat format)
+        {
+            switch (format)
+            {
+                case ColorFormat.L:
+                    return 1;
+
+                case ColorFormat.Rgb:
+                case ColorFormat.Rbg:
+                case ColorFormat.Grb:
+                case ColorFormat.Gbr:
+                case ColorFormat.Brg:
+                case ColorFormat.Bgr:
+                case ColorFormat.Cmy:
+                    return 3;
+
+                case ColorFormat.Rgba:
+                case ColorFormat.Rgbw:
+                case ColorFormat.Grbw:
+                case ColorFormat.Wrgb:
+                    return 4;
+                case ColorFormat.Rgbwa:
+                case ColorFormat.Rgbaw:
+                case ColorFormat.Wargb:
+                    return 5;
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(format), format, null);
+            }
+        }
+    }
+
+    enum PixelDistribution : int
+    {
+        LeftToRight = 170,
+        RightToLeft = 102,
+        BottomToTop = 154,
+        TopToBottom = 166
+    }
 }

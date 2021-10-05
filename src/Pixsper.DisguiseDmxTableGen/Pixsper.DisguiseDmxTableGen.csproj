@@ -21,6 +21,7 @@
 	
 	<ItemGroup>
 		<PackageReference Include="CsvHelper" Version="27.1.1" />
+		<PackageReference Include="FastEnum" Version="1.6.1" />
 		<PackageReference Include="GitVersion.MsBuild" Version="5.7.0">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

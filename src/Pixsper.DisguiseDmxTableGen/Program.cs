@@ -9,7 +9,7 @@ namespace Pixsper.DisguiseDmxTableGen
     {
         public static int Main(string[] args)
         {
-            var app = new CommandApp<ResolumeCommand>();
+            var app = new CommandApp<SelectCommand>();
 
             app.Configure(config =>
             {
