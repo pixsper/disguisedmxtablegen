@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.ComponentModel;
 using System.IO;
@@ -19,6 +20,10 @@ namespace Pixsper.DisguiseDmxTableGen.Resolume
         [CommandOption("-o|--output")]
         [Description("Optional path to output file, if not set the output file will be written to the same directory as the input file")]
         public string? OutputFilePath { get; set; }
+
+        [CommandOption("-u|--universe_offset")]
+        [Description("Optional offset to apply to universe indexes")]
+        public int? UniverseOffset { get; set; }
     }
 
     class ResolumeCommand : AsyncCommand<ResolumeCommandSettings>
@@ -56,12 +61,13 @@ namespace Pixsper.DisguiseDmxTableGen.Resolume
                 var choices = outputPresetsXmlFilePaths.ToDictionary(
                     s => Path.GetFileNameWithoutExtension(s)!);
 
-                var choiceKey = AnsiConsole.Prompt(
-                    new SelectionPrompt<string>()
+                var choicePair= AnsiConsole.Prompt(
+                    new SelectionPrompt<KeyValuePair<string, string>>()
+                        .UseConverter(p => p.Key)
                         .Title("Select a Resolume advanced output preset to convert and press ENTER")
-                        .AddChoices(choices.Keys));
+                        .AddChoices(choices));
 
-                resolvedInputFilepath = choices[choiceKey];
+                resolvedInputFilepath = choicePair.Value;
             }
             else
             {
@@ -93,7 +99,17 @@ namespace Pixsper.DisguiseDmxTableGen.Resolume
                 return -1;
             }
 
-            var dmxTable = pixelmap.ComputeDmxTable();
+            var resolvedUniverseOffset = settings.UniverseOffset ?? 
+                                         AnsiConsole.Ask("Enter a universe offset value (can be negative) or press ENTER for no offset", 0);
+
+            var dmxTable = pixelmap.ComputeDmxTable(resolvedUniverseOffset);
+
+            if (dmxTable.Entries.Any(e => e.UniverseIndex < 0))
+            {
+                AnsiConsole.MarkupLine($"[bold red]Can't convert this preset with universe offset of {resolvedUniverseOffset} " +
+                                       "as it would produce negative universe values[/]");
+                return -1;
+            }
 
             AnsiConsole.MarkupLine($"[bold green]Conversion finished, created DMX table with {dmxTable.Entries.Count} entries[/]");
 

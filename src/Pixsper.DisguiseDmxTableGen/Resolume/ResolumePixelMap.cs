@@ -45,11 +45,11 @@ namespace Pixsper.DisguiseDmxTableGen.Resolume
 
         public ImmutableList<ResolumeFixture> Fixtures { get; init; } = ImmutableList<ResolumeFixture>.Empty;
 
-        public DisguiseDmxTable ComputeDmxTable()
+        public DisguiseDmxTable ComputeDmxTable(int universeOffset)
         {
             return new DisguiseDmxTable
             {
-                Entries = Fixtures.SelectMany(f => f.ComputeDmxTableEntries()).ToImmutableList()
+                Entries = Fixtures.SelectMany(f => f.ComputeDmxTableEntries(universeOffset)).ToImmutableList()
             };
         }
     }
@@ -131,7 +131,7 @@ namespace Pixsper.DisguiseDmxTableGen.Resolume
             {
                 Name = name,
                 IsEnabled = isEnabled,
-                LumiverseId = lumiverseId,
+                UniverseIndex = lumiverseId,
                 StartChannel = (int)Math.Floor(elStartChannel),
                 TopLeft = new Vector2(topLeftX, topLeftY),
                 TopRight = new Vector2(topRightX, topRightY),
@@ -147,7 +147,7 @@ namespace Pixsper.DisguiseDmxTableGen.Resolume
 
         public bool IsEnabled { get; init; }
 
-        public int LumiverseId { get; init; }
+        public int UniverseIndex { get; init; }
         public int StartChannel { get; init; }
 
         public Vector2 TopLeft { get; init; }
@@ -159,7 +159,7 @@ namespace Pixsper.DisguiseDmxTableGen.Resolume
         public ColorFormat ColorFormat { get; init; }
         public PixelDistribution Distribution { get; init; }
 
-        public IEnumerable<DisguiseDmxTable.Entry> ComputeDmxTableEntries()
+        public IEnumerable<DisguiseDmxTable.Entry> ComputeDmxTableEntries(int universeOffset)
         {
             int channel = StartChannel;
 
@@ -179,7 +179,7 @@ namespace Pixsper.DisguiseDmxTableGen.Resolume
                     {
                         X = (int)Math.Round(point.X, MidpointRounding.AwayFromZero),
                         Y = (int)Math.Round(point.Y, MidpointRounding.AwayFromZero),
-                        UniverseIndex = LumiverseId,
+                        UniverseIndex = UniverseIndex + universeOffset,
                         StartChannel = channel
                     };
 
